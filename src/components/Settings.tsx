@@ -5,16 +5,39 @@ import Container from "@material-ui/core/Container";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
+import Filter1Icon from "@material-ui/icons/Filter1Rounded";
+import Filter2Icon from "@material-ui/icons/Filter2Rounded";
+import Filter3Icon from "@material-ui/icons/Filter3Rounded";
+import Filter4Icon from "@material-ui/icons/Filter4Rounded";
+import Filter5Icon from "@material-ui/icons/Filter5Rounded";
+import Filter6Icon from "@material-ui/icons/Filter6Rounded";
+import Filter7Icon from "@material-ui/icons/Filter7Rounded";
+import Filter8Icon from "@material-ui/icons/Filter8Rounded";
+import Filter9Icon from "@material-ui/icons/Filter9Rounded";
 import range from "lodash/range";
 import React from "react";
 
 import { Config } from "../types";
+import Filter0Icon from "./Filter0Rounded";
 
 interface Props {
   config: Config;
   onSubmited: () => void;
   onConfigChanged: (range: Config) => void;
 }
+
+const tableIcons = [
+  Filter0Icon,
+  Filter1Icon,
+  Filter2Icon,
+  Filter3Icon,
+  Filter4Icon,
+  Filter5Icon,
+  Filter6Icon,
+  Filter7Icon,
+  Filter8Icon,
+  Filter9Icon,
+];
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -27,6 +50,14 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+  },
+  table: {
+    cursor: "pointer",
+    opacity: 0.5,
+
+    "&:hover": {
+      opacity: 0.7,
+    },
   },
   section: {
     marginBottom: theme.spacing(4),
@@ -48,27 +79,30 @@ function Settings({ config, onSubmited, onConfigChanged }: Props) {
           <Grid item md={12}>
             <div className={classes.section}>
               <div className={classes.sectionTitle}>Tables</div>
-              <Grid container>
-                {range(10).map((i) => (
-                  <Grid key={i} item xs={6} sm={4} md={2}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={config.tables.includes(i)}
-                          onChange={({ target: { checked } }) => {
-                            onConfigChanged({
-                              ...config,
-                              tables: checked
-                                ? config.tables.concat([i])
-                                : config.tables.filter((table) => table !== i),
-                            });
-                          }}
-                        />
-                      }
-                      label={`x ${i}`}
-                    />
-                  </Grid>
-                ))}
+              <Grid container spacing={2}>
+                {range(10).map((i) => {
+                  const Icon = tableIcons[i];
+                  const checked = config.tables.includes(i);
+
+                  return (
+                    <Grid key={i} item xs={6} sm={4} md={2}>
+                      <Icon
+                        fontSize="large"
+                        color={checked ? "primary" : "inherit"}
+                        className={classes.table}
+                        style={checked ? { opacity: 1 } : {}}
+                        onClick={() => {
+                          onConfigChanged({
+                            ...config,
+                            tables: checked
+                              ? config.tables.filter((table) => table !== i)
+                              : config.tables.concat([i]),
+                          });
+                        }}
+                      />
+                    </Grid>
+                  );
+                })}
               </Grid>
             </div>
 
