@@ -17,6 +17,7 @@ import React from "react";
 
 import { Config } from "../types";
 import Filter0Icon from "./Filter0Rounded";
+import Progress from "./Progress";
 
 const icons = [
   Filter0Icon,
@@ -39,18 +40,20 @@ const useStyles = makeStyles((theme) => ({
     bottom: theme.spacing(5),
     display: "flex",
     justifyContent: "center",
+    alignItems: "center",
     transition: theme.transitions.create("transform"),
   },
   inner: {
     backgroundColor: "rgba(255, 255, 255, 0.3)",
     border: "solid 2px rgba(255, 255, 255, 0.4)",
     borderRadius: 4,
-    padding: theme.spacing(1),
+    padding: theme.spacing(1, 2),
+    marginRight: theme.spacing(2),
     display: "flex",
     alignItems: "center",
   },
   hidden: {
-    transform: "translateY(72px)",
+    transform: "translateY(200px)",
   },
   option: {
     margin: theme.spacing(0, 0.5),
@@ -80,15 +83,21 @@ const useStyles = makeStyles((theme) => ({
 interface Props {
   config: Config;
   hidden: boolean;
+  progress: number;
   onStop: () => void;
 }
 
-function Toolbar({ config: { tables, random, loop }, hidden, onStop }: Props) {
+function Toolbar({
+  config: { tables, random, loop },
+  hidden,
+  progress,
+  onStop,
+}: Props) {
   const classes = useStyles();
 
   return (
     <div className={cn(classes.root, { [classes.hidden]: hidden })}>
-      <div className={cn(classes.inner, { [classes.hidden]: hidden })}>
+      <div className={classes.inner}>
         <div className={classes.tables}>
           {range(10).map((table) => {
             const Icon = icons[table];
@@ -124,6 +133,8 @@ function Toolbar({ config: { tables, random, loop }, hidden, onStop }: Props) {
           </Button>
         </div>
       </div>
+
+      <Progress value={progress} />
     </div>
   );
 }

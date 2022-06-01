@@ -152,6 +152,7 @@ function App() {
       <Toolbar
         config={config}
         hidden={!started}
+        progress={(currentIndex / operations.length) * 100}
         onStop={() => {
           setStarted(false);
         }}
