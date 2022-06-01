@@ -36,8 +36,9 @@
     "lint": "eslint .",
     "format": "prettier --write --ignore-unknown '**/*'",
     "format-check": "prettier --check --ignore-unknown '**/*'",
-    "deploy": "surge build nombres.surge.sh",
-    "predeploy": "yarn build"
+    "deploy": "surge build tables.surge.sh",
+    "predeploy": "yarn build",
+    "prepare": "husky install"
   },
   "browserslist": {
     "production": [
