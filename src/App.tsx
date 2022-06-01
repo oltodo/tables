@@ -1,67 +1,27 @@
 import { makeStyles } from "@material-ui/core/styles";
-import createRange from "lodash/range";
-import shuffle from "lodash/shuffle";
+import { flatten, shuffle } from "lodash";
+import range from "lodash/range";
 import React, { useEffect, useState } from "react";
 import { useLocalStorage } from "react-use";
-import writtenNumber from "written-number";
 
 import Settings from "./Settings";
 import Toolbar from "./Toolbar";
-import { Config, Range, SequencingMode } from "./types";
+import { Config } from "./types";
 
-enum Version {
-  literal,
-  digital,
-}
-
-interface SerieItem {
-  number: number;
-  text: string;
-}
-
-type Serie = SerieItem[];
-
-let voices: SpeechSynthesisVoice[] | null = null;
-
-window.speechSynthesis.onvoiceschanged = () => {
-  voices = window.speechSynthesis
-    .getVoices()
-    .filter((voice) => voice.lang === "fr-FR");
-};
-
-function say(text: number) {
-  return new Promise((resolve) => {
-    var msg = new SpeechSynthesisUtterance();
-    msg.text = `${text}`;
-    msg.onend = resolve;
-
-    if (voices) {
-      msg.voice = voices[voices.length - 1];
-    }
-
-    window.speechSynthesis.speak(msg);
-  });
-}
-
-const createSerie = (
-  range: Range,
-  random: boolean = true,
-  version: Version = Version.digital
-): Serie => {
-  let numbers: number[] = createRange(range[0], range[1] + 1);
-
-  if (random) {
-    numbers = shuffle(numbers);
+function calc(operation: Operation): number {
+  switch (operation.operator) {
+    case "+":
+      return operation.operands.reduce((acc, curr) => acc + curr);
+    case "-":
+      return operation.operands.reduce((acc, curr) => acc - curr);
+    case "x":
+      return operation.operands.reduce((acc, curr) => acc * curr);
+    case "/":
+      return operation.operands.reduce((acc, curr) => acc / curr);
+    default:
+      return 0;
   }
-
-  return numbers.map((number) => ({
-    number,
-    text:
-      version === Version.digital
-        ? `${number}`
-        : writtenNumber(number, { lang: "fr" }),
-  }));
-};
+}
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -72,15 +32,20 @@ const useStyles = makeStyles((theme) => ({
     width: "100vw",
     height: "100vh",
   },
-  number: {
-    fontFamily: '"Cursive Standard"',
+  operation: {
+    fontSize: "10vw",
   },
 }));
 
 const defaultConfig: Config = {
-  range: [0, 20],
-  sequencingMode: SequencingMode.literalThenDigital,
+  tables: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+  random: false,
 };
+
+interface Operation {
+  operator: "+" | "-" | "x" | "/";
+  operands: number[];
+}
 
 function App() {
   const [config = defaultConfig, setConfig] = useLocalStorage<Config>(
@@ -90,59 +55,21 @@ function App() {
 
   const [started, setStarted] = useState<boolean>(false);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [serie, setSerie] = useState<Serie>([]);
+  const [showResult, setShowResult] = useState<boolean>(false);
+  const [operations, setOperations] = useState<Operation[]>([]);
   const classes = useStyles();
 
   const start = (): void => {
-    switch (config.sequencingMode) {
-      case SequencingMode.literalOnly: {
-        setSerie(createSerie(config.range, true, Version.literal));
-        break;
-      }
-      case SequencingMode.literalThenDigital: {
-        const serieDigital = createSerie(config.range, true, Version.literal);
-        const serieLiteral = createSerie(config.range, true, Version.digital);
-        setSerie(serieDigital.concat(serieLiteral));
-        break;
-      }
-      case SequencingMode.digitalOnly: {
-        setSerie(createSerie(config.range, true, Version.digital));
-        break;
-      }
-      case SequencingMode.digitalThenLiteral: {
-        const serieDigital = createSerie(config.range, true, Version.digital);
-        const serieLiteral = createSerie(config.range, true, Version.literal);
-        setSerie(serieDigital.concat(serieLiteral));
-        break;
-      }
-      case SequencingMode.alternateDigitalAndLiteral:
-      case SequencingMode.alternateLiteralAndDigital: {
-        const serieDigital = createSerie(config.range, true, Version.digital);
-        const serieLiteral = createSerie(config.range, true, Version.literal);
+    const items = flatten<Operation>(
+      config.tables.map((table) =>
+        range(10).map((operand) => ({
+          operator: "x",
+          operands: [operand, table],
+        }))
+      )
+    );
 
-        setSerie(
-          serieDigital.reduce((acc: Serie, curr, index) => {
-            if (
-              config.sequencingMode ===
-              SequencingMode.alternateLiteralAndDigital
-            ) {
-              return acc.concat(serieLiteral[index], curr);
-            } else {
-              return acc.concat(curr, serieLiteral[index]);
-            }
-          }, [])
-        );
-        break;
-      }
-      case SequencingMode.alternateLiteralAndDigitalRandomly: {
-        const serieDigital = createSerie(config.range, true, Version.digital);
-        const serieLiteral = createSerie(config.range, true, Version.literal);
-
-        setSerie(shuffle(serieDigital.concat(serieLiteral)));
-        break;
-      }
-    }
-
+    setOperations(config.random ? shuffle(items) : items);
     setCurrentIndex(0);
     setStarted(true);
   };
@@ -159,11 +86,14 @@ function App() {
     }
 
     const next = async () => {
-      if (currentIndex >= 0) {
-        await say(serie[currentIndex].number);
+      if (!showResult) {
+        setShowResult(true);
+        return;
       }
 
-      if (currentIndex < serie.length - 1) {
+      setShowResult(false);
+
+      if (currentIndex < operations.length - 1) {
         setCurrentIndex(currentIndex + 1);
         return;
       }
@@ -182,20 +112,18 @@ function App() {
     return () => {
       window.removeEventListener("keydown", handleKeydown);
     };
-  }, [currentIndex, serie, started]);
+  }, [currentIndex, operations, started, showResult]);
 
-  const renderNumber = () => {
-    const { text }: SerieItem = serie[currentIndex];
-    const fontSize = Math.min(8, 120 / text.length);
+  const renderOperation = () => {
+    const op = operations[currentIndex];
 
     return (
-      <span
-        className={classes.number}
-        style={{
-          fontSize: `${fontSize}vw`,
-        }}
-      >
-        {text}
+      <span className={classes.operation}>
+        {op.operands.join(` ${op.operator} `)}
+        {" = "}
+        <span style={{ visibility: showResult ? "visible" : "hidden" }}>
+          {calc(op)}
+        </span>
       </span>
     );
   };
@@ -203,7 +131,7 @@ function App() {
   return (
     <div className={classes.root}>
       {started ? (
-        renderNumber()
+        renderOperation()
       ) : (
         <Settings
           config={config}
@@ -214,7 +142,7 @@ function App() {
         />
       )}
 
-      <Toolbar range={config.range} hidden={!started} />
+      <Toolbar tables={config.tables} hidden={!started} />
     </div>
   );
 }

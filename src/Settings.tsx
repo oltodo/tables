@@ -1,3 +1,4 @@
+import { Checkbox, FormGroup } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
@@ -6,7 +7,7 @@ import Grid from "@material-ui/core/Grid";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import { makeStyles } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
+import range from "lodash/range";
 import React from "react";
 
 import { Config } from "./types";
@@ -17,15 +18,7 @@ interface Props {
   onConfigChanged: (range: Config) => void;
 }
 
-const sequencingModeLabels = [
-  "Uniquement la version litérale",
-  "Uniquement la version numérique",
-  "D’abord la version litérale puis numérique",
-  "D’abord la version numérique puis litérale",
-  "Alterner la version litérale et numérique",
-  "Alterner la version numérique et digitale",
-  "Alterner aléatoirement la version litérale et numérique",
-];
+const sequencingModeLabels = ["Dans l'ordre", "Dans le désordre"];
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,9 +42,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Parameters({ config, onSubmited, onConfigChanged }: Props) {
+function Settings({ config, onSubmited, onConfigChanged }: Props) {
   const classes = useStyles();
-  const { range } = config;
 
   return (
     <div className={classes.root}>
@@ -59,37 +51,33 @@ function Parameters({ config, onSubmited, onConfigChanged }: Props) {
         <Grid container spacing={10}>
           <Grid item md={12}>
             <div className={classes.section}>
-              <div className={classes.sectionTitle}>Plage de nombre</div>
-              <Grid container spacing={3}>
-                <Grid item xs={6}>
-                  <TextField
-                    variant="outlined"
-                    size="small"
-                    defaultValue={range[0]}
-                    onChange={(event) => {
-                      onConfigChanged({
-                        ...config,
-                        range: [parseInt(event.target.value, 10), range[1]],
-                      });
-                    }}
-                    fullWidth
-                  />
+              <div className={classes.sectionTitle}>Tables</div>
+              <FormGroup>
+                <Grid container>
+                  {range(10).map((i) => (
+                    <Grid key={i} item xs={6} sm={4} md={2}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={config.tables.includes(i)}
+                            onChange={({ target: { checked } }) => {
+                              onConfigChanged({
+                                ...config,
+                                tables: checked
+                                  ? config.tables.concat([i])
+                                  : config.tables.filter(
+                                      (table) => table !== i
+                                    ),
+                              });
+                            }}
+                          />
+                        }
+                        label={`x ${i}`}
+                      />
+                    </Grid>
+                  ))}
                 </Grid>
-                <Grid item xs={6}>
-                  <TextField
-                    variant="outlined"
-                    size="small"
-                    defaultValue={range[1]}
-                    onChange={(event) => {
-                      onConfigChanged({
-                        ...config,
-                        range: [range[0], parseInt(event.target.value, 10)],
-                      });
-                    }}
-                    fullWidth
-                  />
-                </Grid>
-              </Grid>
+              </FormGroup>
             </div>
 
             <div className={classes.section}>
@@ -97,11 +85,11 @@ function Parameters({ config, onSubmited, onConfigChanged }: Props) {
                 Ordre d&rsquo;apparition
               </div>
               <RadioGroup
-                value={config.sequencingMode}
+                value={Number(config.random)}
                 onChange={(event) => {
                   onConfigChanged({
                     ...config,
-                    sequencingMode: parseInt(event.target.value, 10),
+                    random: Boolean(parseInt(event.target.value, 10)),
                   });
                 }}
               >
@@ -132,4 +120,4 @@ function Parameters({ config, onSubmited, onConfigChanged }: Props) {
   );
 }
 
-export default Parameters;
+export default Settings;

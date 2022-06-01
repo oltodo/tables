@@ -2,8 +2,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import cn from "classnames";
 import React from "react";
 
-import { Range } from "./types";
-
 const useStyles = makeStyles((theme) => ({
   root: {
     position: "fixed",
@@ -20,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
   disabled: {
     opacity: 0.5,
   },
-  range: {
+  tables: {
     fontSize: 16,
     backgroundColor: "rgba(255, 255, 255, 0.3)",
     color: "white",
@@ -35,20 +33,20 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 interface Props {
-  range: Range;
+  tables: number[];
   hidden: boolean;
 }
 
-function Parameters({ range, hidden }: Props) {
+function Toolbar({ tables, hidden }: Props) {
   const classes = useStyles();
 
   return (
     <div className={cn(classes.root, { [classes.hidden]: hidden })}>
-      <div className={cn(classes.range, classes.disabled)}>
-        {range[0]} &#8594; {range[1]}
+      <div className={cn(classes.tables, classes.disabled)}>
+        {tables.map((table) => `x${table}`).join(", ")}
       </div>
     </div>
   );
 }
 
-export default Parameters;
+export default Toolbar;
