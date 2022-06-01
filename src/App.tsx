@@ -70,6 +70,7 @@ function App() {
       )
     );
 
+    setShowResult(false);
     setOperations(config.random ? shuffle(items) : items);
     setCurrentIndex(0);
     setStarted(true);
