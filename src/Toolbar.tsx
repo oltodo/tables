@@ -1,6 +1,7 @@
-import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import cn from "classnames";
+import React from "react";
+
 import { Range } from "./types";
 
 const useStyles = makeStyles((theme) => ({

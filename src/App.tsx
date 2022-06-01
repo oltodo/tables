@@ -1,9 +1,10 @@
+import { makeStyles } from "@material-ui/core/styles";
+import createRange from "lodash/range";
+import shuffle from "lodash/shuffle";
 import React, { useEffect, useState } from "react";
 import { useLocalStorage } from "react-use";
-import { makeStyles } from "@material-ui/core/styles";
-import shuffle from "lodash/shuffle";
-import createRange from "lodash/range";
 import writtenNumber from "written-number";
+
 import Settings from "./Settings";
 import Toolbar from "./Toolbar";
 import { Config, Range, SequencingMode } from "./types";
