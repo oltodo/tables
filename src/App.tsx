@@ -63,7 +63,7 @@ function App() {
   const start = useCallback((): void => {
     const items = flatten<Operation>(
       config.tables.map((table) =>
-        range(10).map((operand) => ({
+        range(11).map((operand) => ({
           operator: "x",
           operands: [operand, table],
         }))
