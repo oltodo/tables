@@ -1,11 +1,9 @@
-import { Checkbox, FormGroup } from "@material-ui/core";
+import { Checkbox } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Grid from "@material-ui/core/Grid";
-import Radio from "@material-ui/core/Radio";
-import RadioGroup from "@material-ui/core/RadioGroup";
 import { makeStyles } from "@material-ui/core/styles";
 import range from "lodash/range";
 import React from "react";
@@ -17,8 +15,6 @@ interface Props {
   onSubmited: () => void;
   onConfigChanged: (range: Config) => void;
 }
-
-const sequencingModeLabels = ["Dans l'ordre", "Dans le désordre"];
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
   sectionTitle: {
     fontWeight: 600,
     fontSize: 16,
-    marginBottom: theme.spacing(4),
+    marginBottom: theme.spacing(3),
   },
 }));
 
@@ -52,56 +48,58 @@ function Settings({ config, onSubmited, onConfigChanged }: Props) {
           <Grid item md={12}>
             <div className={classes.section}>
               <div className={classes.sectionTitle}>Tables</div>
-              <FormGroup>
-                <Grid container>
-                  {range(10).map((i) => (
-                    <Grid key={i} item xs={6} sm={4} md={2}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={config.tables.includes(i)}
-                            onChange={({ target: { checked } }) => {
-                              onConfigChanged({
-                                ...config,
-                                tables: checked
-                                  ? config.tables.concat([i])
-                                  : config.tables.filter(
-                                      (table) => table !== i
-                                    ),
-                              });
-                            }}
-                          />
-                        }
-                        label={`x ${i}`}
-                      />
-                    </Grid>
-                  ))}
-                </Grid>
-              </FormGroup>
+              <Grid container>
+                {range(10).map((i) => (
+                  <Grid key={i} item xs={6} sm={4} md={2}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={config.tables.includes(i)}
+                          onChange={({ target: { checked } }) => {
+                            onConfigChanged({
+                              ...config,
+                              tables: checked
+                                ? config.tables.concat([i])
+                                : config.tables.filter((table) => table !== i),
+                            });
+                          }}
+                        />
+                      }
+                      label={`x ${i}`}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
             </div>
 
             <div className={classes.section}>
-              <div className={classes.sectionTitle}>
-                Ordre d&rsquo;apparition
+              <div className={classes.sectionTitle}>Options</div>
+              <div>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={config.random}
+                      onChange={({ target: { checked } }) => {
+                        onConfigChanged({ ...config, random: checked });
+                      }}
+                    />
+                  }
+                  label={"Dans le désordre"}
+                />
               </div>
-              <RadioGroup
-                value={Number(config.random)}
-                onChange={(event) => {
-                  onConfigChanged({
-                    ...config,
-                    random: Boolean(parseInt(event.target.value, 10)),
-                  });
-                }}
-              >
-                {sequencingModeLabels.map((label, index) => (
-                  <FormControlLabel
-                    key={index}
-                    value={index}
-                    control={<Radio size="small" color="primary" />}
-                    label={label}
-                  />
-                ))}
-              </RadioGroup>
+              <div>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={config.loop}
+                      onChange={({ target: { checked } }) => {
+                        onConfigChanged({ ...config, loop: checked });
+                      }}
+                    />
+                  }
+                  label={"En boucle"}
+                />
+              </div>
             </div>
           </Grid>
         </Grid>

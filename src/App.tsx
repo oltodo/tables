@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/core/styles";
 import { flatten, shuffle } from "lodash";
 import range from "lodash/range";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useLocalStorage } from "react-use";
 
 import Settings from "./Settings";
@@ -40,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
 const defaultConfig: Config = {
   tables: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
   random: false,
+  loop: false,
 };
 
 interface Operation {
@@ -59,7 +60,7 @@ function App() {
   const [operations, setOperations] = useState<Operation[]>([]);
   const classes = useStyles();
 
-  const start = (): void => {
+  const start = useCallback((): void => {
     const items = flatten<Operation>(
       config.tables.map((table) =>
         range(10).map((operand) => ({
@@ -72,7 +73,7 @@ function App() {
     setOperations(config.random ? shuffle(items) : items);
     setCurrentIndex(0);
     setStarted(true);
-  };
+  }, [config.random, config.tables]);
 
   useEffect(() => {
     setConfig({ ...defaultConfig, ...config });
@@ -98,6 +99,11 @@ function App() {
         return;
       }
 
+      if (config.loop) {
+        start();
+        return;
+      }
+
       setStarted(false);
     };
 
@@ -112,7 +118,7 @@ function App() {
     return () => {
       window.removeEventListener("keydown", handleKeydown);
     };
-  }, [currentIndex, operations, started, showResult]);
+  }, [currentIndex, operations, started, showResult, config.loop, start]);
 
   const renderOperation = () => {
     const op = operations[currentIndex];
