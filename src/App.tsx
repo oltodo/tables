@@ -4,8 +4,8 @@ import range from "lodash/range";
 import React, { useCallback, useEffect, useState } from "react";
 import { useLocalStorage } from "react-use";
 
-import Settings from "./Settings";
-import Toolbar from "./Toolbar";
+import Settings from "./components/Settings";
+import Toolbar from "./components/Toolbar";
 import { Config } from "./types";
 
 function calc(operation: Operation): number {
@@ -148,7 +148,13 @@ function App() {
         />
       )}
 
-      <Toolbar tables={config.tables} hidden={!started} />
+      <Toolbar
+        config={config}
+        hidden={!started}
+        onStop={() => {
+          setStarted(false);
+        }}
+      />
     </div>
   );
 }

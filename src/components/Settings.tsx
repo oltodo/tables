@@ -8,7 +8,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import range from "lodash/range";
 import React from "react";
 
-import { Config } from "./types";
+import { Config } from "../types";
 
 interface Props {
   config: Config;
