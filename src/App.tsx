@@ -4,6 +4,7 @@ import range from "lodash/range";
 import React, { useCallback, useEffect, useState } from "react";
 import { useLocalStorage } from "react-use";
 
+import Countdown from "./components/Countdown";
 import Settings from "./components/Settings";
 import Toolbar from "./components/Toolbar";
 import { Config } from "./types";
@@ -29,11 +30,13 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    flexDirection: "column",
     width: "100vw",
     height: "100vh",
   },
   operation: {
     fontSize: "10vw",
+    marginBottom: theme.spacing(8),
   },
 }));
 
@@ -41,6 +44,8 @@ const defaultConfig: Config = {
   tables: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
   random: false,
   loop: false,
+  race: false,
+  raceTime: 3,
 };
 
 interface Operation {
@@ -89,7 +94,9 @@ function App() {
 
     const next = async () => {
       if (!showResult) {
-        setShowResult(true);
+        if (!config.race) {
+          setShowResult(true);
+        }
         return;
       }
 
@@ -119,19 +126,35 @@ function App() {
     return () => {
       window.removeEventListener("keydown", handleKeydown);
     };
-  }, [currentIndex, operations, started, showResult, config.loop, start]);
+  }, [
+    currentIndex,
+    operations,
+    started,
+    showResult,
+    config.loop,
+    start,
+    config.race,
+  ]);
 
   const renderOperation = () => {
     const op = operations[currentIndex];
 
     return (
-      <span className={classes.operation}>
-        {op.operands.join(` ${op.operator} `)}
-        {" = "}
-        <span style={{ visibility: showResult ? "visible" : "hidden" }}>
-          {calc(op)}
-        </span>
-      </span>
+      <>
+        <div className={classes.operation}>
+          {op.operands.join(` ${op.operator} `)}
+          {showResult ? ` = ${calc(op)}` : ""}
+        </div>
+        {config.race && !showResult && (
+          <Countdown
+            duration={config.raceTime * 1000}
+            key={currentIndex}
+            onFinished={() => {
+              setShowResult(true);
+            }}
+          />
+        )}
+      </>
     );
   };
 

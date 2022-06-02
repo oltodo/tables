@@ -11,6 +11,7 @@ import Filter7Icon from "@material-ui/icons/Filter7TwoTone";
 import Filter8Icon from "@material-ui/icons/Filter8TwoTone";
 import Filter9Icon from "@material-ui/icons/Filter9TwoTone";
 import ShuffleIcon from "@material-ui/icons/ShuffleTwoTone";
+import TimerIcon from "@material-ui/icons/TimerTwoTone";
 import cn from "classnames";
 import { range } from "lodash";
 import React from "react";
@@ -88,7 +89,7 @@ interface Props {
 }
 
 function Toolbar({
-  config: { tables, random, loop },
+  config: { tables, random, loop, race },
   hidden,
   progress,
   onStop,
@@ -120,6 +121,9 @@ function Toolbar({
         </div>
         <div className={cn(classes.option, { [classes.disabled]: !loop })}>
           <AllInclusiveIcon />
+        </div>
+        <div className={cn(classes.option, { [classes.disabled]: !race })}>
+          <TimerIcon />
         </div>
 
         <div className={cn(classes.action)}>

@@ -1,4 +1,4 @@
-import { Checkbox } from "@material-ui/core";
+import { Checkbox, alpha } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
@@ -14,6 +14,7 @@ import Filter6Icon from "@material-ui/icons/Filter6TwoTone";
 import Filter7Icon from "@material-ui/icons/Filter7TwoTone";
 import Filter8Icon from "@material-ui/icons/Filter8TwoTone";
 import Filter9Icon from "@material-ui/icons/Filter9TwoTone";
+import cn from "classnames";
 import range from "lodash/range";
 import React from "react";
 
@@ -66,6 +67,44 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 600,
     fontSize: 16,
     marginBottom: theme.spacing(3),
+  },
+  raceTimeButtons: {
+    marginLeft: theme.spacing(2),
+  },
+  disabled: {
+    opacity: 0.2,
+  },
+  raceTimeButton: {
+    margin: theme.spacing(0, 0.5),
+    backgroundColor: alpha("#fff", 0.3),
+    border: "solid 2px",
+    color: alpha("#fff", 0.6),
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    cursor: "pointer",
+    opacity: 0.5,
+
+    "&:hover": {
+      opacity: 0.7,
+    },
+
+    "$disabled &": {
+      cursor: "default",
+
+      "&:hover": {
+        opacity: 0.5,
+      },
+    },
+  },
+  active: {
+    color: theme.palette.primary.main,
+    backgroundColor: alpha(theme.palette.primary.main, 0.3),
+    opacity: 1,
+
+    "$disabled &": {
+      opacity: 0.5,
+    },
   },
 }));
 
@@ -132,6 +171,44 @@ function Settings({ config, onSubmited, onConfigChanged }: Props) {
                     />
                   }
                   label={"En boucle"}
+                />
+              </div>
+              <div>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={config.race}
+                      onChange={({ target: { checked } }) => {
+                        onConfigChanged({ ...config, race: checked });
+                      }}
+                    />
+                  }
+                  label={
+                    <>
+                      Contre la montre
+                      <span
+                        className={cn(classes.raceTimeButtons, {
+                          [classes.disabled]: !config.race,
+                        })}
+                      >
+                        {range(1, 6).map((i) => (
+                          <button
+                            key={i}
+                            className={cn(classes.raceTimeButton, {
+                              [classes.active]: config.raceTime === i,
+                            })}
+                            onClick={() => {
+                              if (config.race) {
+                                onConfigChanged({ ...config, raceTime: i });
+                              }
+                            }}
+                          >
+                            {i}s
+                          </button>
+                        ))}
+                      </span>
+                    </>
+                  }
                 />
               </div>
             </div>
