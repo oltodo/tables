@@ -1,9 +1,4 @@
-import {
-  Box,
-  CircularProgress,
-  makeStyles,
-  Typography,
-} from "@material-ui/core";
+import { Box, CircularProgress, makeStyles } from "@material-ui/core";
 import React from "react";
 
 interface Props {
@@ -23,16 +18,6 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
     opacity: 0.1,
   },
-  value: {
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
-    position: "absolute",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
 }));
 
 function Progress({ value }: Props) {
@@ -43,13 +28,6 @@ function Progress({ value }: Props) {
       <CircularProgress variant="determinate" value={value} />
       <Box className={classes.shadow}>
         <CircularProgress variant="determinate" color="inherit" value={100} />
-      </Box>
-      <Box className={classes.value}>
-        <Typography
-          variant="caption"
-          component="div"
-          color="textSecondary"
-        >{`${Math.round(value)}%`}</Typography>
       </Box>
     </div>
   );
