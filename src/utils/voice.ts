@@ -21,6 +21,9 @@ function getVoice(): SpeechSynthesisVoice | undefined {
     .find((voice) => voice.lang === "fr-FR");
 }
 
+// Force the browser to load voices
+getVoice();
+
 export function speakOperation(
   operation: Operation,
   result: number | null = null
