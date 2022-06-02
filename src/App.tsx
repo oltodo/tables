@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/core/styles";
 import { flatten, shuffle } from "lodash";
 import range from "lodash/range";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocalStorage } from "react-use";
 
 import Countdown from "./components/Countdown";
@@ -58,10 +58,17 @@ function App() {
   );
 
   const [started, setStarted] = useState<boolean>(false);
+  const [ready, setReady] = useState<boolean>(false);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [showResult, setShowResult] = useState<boolean>(false);
   const [operations, setOperations] = useState<Operation[]>([]);
   const classes = useStyles();
+
+  const handleCountdownFinished = useMemo(() => {
+    return () => {
+      setShowResult(true);
+    };
+  }, []);
 
   const result = operations.length ? calc(operations[currentIndex]) : 0;
 
@@ -75,6 +82,7 @@ function App() {
       )
     );
 
+    setReady(false);
     setShowResult(false);
     setOperations(config.random ? shuffle(items) : items);
     setCurrentIndex(0);
@@ -88,15 +96,21 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (operations.length === 0) {
+    if (operations.length === 0 || !started) {
       return;
     }
-    if (config.sayOperation && !showResult) {
-      speakOperation(operations[currentIndex]);
-    }
-    if (config.sayResult && showResult) {
-      speak(`${result}`);
-    }
+
+    const speech = async () => {
+      if (config.sayOperation && !showResult) {
+        await speakOperation(operations[currentIndex]);
+        setReady(true);
+      }
+      if (config.sayResult && showResult) {
+        speak(`${result}`);
+      }
+    };
+
+    speech();
   }, [
     config.sayOperation,
     config.sayResult,
@@ -104,6 +118,7 @@ function App() {
     operations,
     result,
     showResult,
+    started,
   ]);
 
   useEffect(() => {
@@ -119,6 +134,7 @@ function App() {
         return;
       }
 
+      setReady(false);
       setShowResult(false);
 
       if (currentIndex < operations.length - 1) {
@@ -158,20 +174,27 @@ function App() {
   const renderOperation = () => {
     const op = operations[currentIndex];
 
+    const running = !config.sayOperation || ready;
+
     return (
       <>
         <div className={classes.operation}>
           {op.operands.join(` ${op.operator} `)}
           {showResult ? ` = ${result}` : ""}
         </div>
-        {config.race && !showResult && (
-          <Countdown
-            duration={config.raceTime * 1000}
-            key={currentIndex}
-            onFinished={() => {
-              setShowResult(true);
+        {config.race && (
+          <div
+            style={{
+              visibility: showResult || !running ? "hidden" : "visible",
             }}
-          />
+          >
+            <Countdown
+              duration={config.raceTime * 1000}
+              key={currentIndex}
+              running={running}
+              onFinished={handleCountdownFinished}
+            />
+          </div>
         )}
       </>
     );

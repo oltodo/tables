@@ -36,14 +36,14 @@ export function speakOperation(
     text += ` ${result}`;
   }
 
-  speak(text);
+  return speak(text);
 }
 
 export function speak(text: string) {
   return new Promise((resolve) => {
     var msg = new SpeechSynthesisUtterance();
     msg.text = text;
-    msg.onend = resolve;
+    msg.onstart = resolve;
     msg.rate = 1.3;
 
     const voice = getVoice();

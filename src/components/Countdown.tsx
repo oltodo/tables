@@ -3,6 +3,7 @@ import React, { useEffect, useRef } from "react";
 
 interface Props {
   duration: number;
+  running: boolean;
   onFinished: () => void;
 }
 
@@ -19,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Countdown({ duration, onFinished }: Props) {
+function Countdown({ duration, running, onFinished }: Props) {
   const classes = useStyles();
   const progressRef = useRef<HTMLDivElement>(null);
 
@@ -43,8 +44,10 @@ function Countdown({ duration, onFinished }: Props) {
       }
     };
 
-    update();
-  }, [duration, onFinished]);
+    if (running) {
+      update();
+    }
+  }, [duration, running, onFinished]);
 
   return (
     <div className={classes.root}>
