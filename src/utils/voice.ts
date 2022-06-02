@@ -28,9 +28,9 @@ export function speakOperation(
   operation: Operation,
   result: number | null = null
 ) {
-  let text = `${operation.operands.join(
-    ` ${operatorToText(operation.operator)} `
-  )}`;
+  let text = `${operation.operands
+    .map((operand) => (operand === 1 ? "un" : operand))
+    .join(` ${operatorToText(operation.operator)} `)}`;
 
   if (result !== null) {
     text += ` ${result}`;
