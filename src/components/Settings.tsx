@@ -211,6 +211,32 @@ function Settings({ config, onSubmited, onConfigChanged }: Props) {
                   }
                 />
               </div>
+              <div>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={config.sayOperation}
+                      onChange={({ target: { checked } }) => {
+                        onConfigChanged({ ...config, sayOperation: checked });
+                      }}
+                    />
+                  }
+                  label="Prononcer l'opération"
+                />
+              </div>
+              <div>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={config.sayResult}
+                      onChange={({ target: { checked } }) => {
+                        onConfigChanged({ ...config, sayResult: checked });
+                      }}
+                    />
+                  }
+                  label="Prononcer le résultat"
+                />
+              </div>
             </div>
           </Grid>
         </Grid>

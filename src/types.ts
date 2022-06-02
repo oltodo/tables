@@ -4,4 +4,11 @@ export interface Config {
   loop: boolean;
   race: boolean;
   raceTime: number;
+  sayOperation: boolean;
+  sayResult: boolean;
+}
+
+export interface Operation {
+  operator: "+" | "-" | "x" | "/";
+  operands: number[];
 }

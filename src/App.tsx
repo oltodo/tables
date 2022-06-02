@@ -7,7 +7,8 @@ import { useLocalStorage } from "react-use";
 import Countdown from "./components/Countdown";
 import Settings from "./components/Settings";
 import Toolbar from "./components/Toolbar";
-import { Config } from "./types";
+import { Config, Operation } from "./types";
+import { speak, speakOperation } from "./utils/voice";
 
 function calc(operation: Operation): number {
   switch (operation.operator) {
@@ -46,12 +47,9 @@ const defaultConfig: Config = {
   loop: false,
   race: false,
   raceTime: 3,
+  sayOperation: false,
+  sayResult: false,
 };
-
-interface Operation {
-  operator: "+" | "-" | "x" | "/";
-  operands: number[];
-}
 
 function App() {
   const [config = defaultConfig, setConfig] = useLocalStorage<Config>(
@@ -64,6 +62,8 @@ function App() {
   const [showResult, setShowResult] = useState<boolean>(false);
   const [operations, setOperations] = useState<Operation[]>([]);
   const classes = useStyles();
+
+  const result = operations.length ? calc(operations[currentIndex]) : 0;
 
   const start = useCallback((): void => {
     const items = flatten<Operation>(
@@ -86,6 +86,25 @@ function App() {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (operations.length === 0) {
+      return;
+    }
+    if (config.sayOperation && !showResult) {
+      speakOperation(operations[currentIndex]);
+    }
+    if (config.sayResult && showResult) {
+      speak(`${result}`);
+    }
+  }, [
+    config.sayOperation,
+    config.sayResult,
+    currentIndex,
+    operations,
+    result,
+    showResult,
+  ]);
 
   useEffect(() => {
     if (!started) {
@@ -143,7 +162,7 @@ function App() {
       <>
         <div className={classes.operation}>
           {op.operands.join(` ${op.operator} `)}
-          {showResult ? ` = ${calc(op)}` : ""}
+          {showResult ? ` = ${result}` : ""}
         </div>
         {config.race && !showResult && (
           <Countdown
