@@ -18,6 +18,7 @@ import React from "react";
 
 import { Config } from "../types";
 import Filter0Icon from "./Filter0Rounded";
+import Message from "./Message";
 import Progress from "./Progress";
 
 const icons = [
@@ -79,12 +80,17 @@ const useStyles = makeStyles((theme) => ({
   action: {
     marginLeft: theme.spacing(2),
   },
+  message: {
+    position: "absolute",
+    bottom: theme.spacing(10),
+  },
 }));
 
 interface Props {
   config: Config;
   hidden: boolean;
   progress: number;
+  message: string;
   onStop: () => void;
 }
 
@@ -92,12 +98,19 @@ function Toolbar({
   config: { tables, random, loop, race },
   hidden,
   progress,
+  message = "",
   onStop,
 }: Props) {
   const classes = useStyles();
 
   return (
     <div className={cn(classes.root, { [classes.hidden]: hidden })}>
+      {message && (
+        <div className={classes.message}>
+          <Message>{message}</Message>
+        </div>
+      )}
+
       <div className={classes.inner}>
         <div className={classes.tables}>
           {range(10).map((table) => {

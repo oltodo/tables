@@ -218,6 +218,11 @@ function App() {
         config={config}
         hidden={!started}
         progress={(currentIndex / operations.length) * 100}
+        message={
+          !showResult && !config.race
+            ? "Appuies sur espace pour afficher le résultat"
+            : (showResult && "Appuies sur espace pour continuer") || ""
+        }
         onStop={() => {
           setStarted(false);
         }}
