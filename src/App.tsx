@@ -1,6 +1,5 @@
 import { Box } from "@mui/material";
 import { flatten, shuffle } from "lodash";
-import range from "lodash/range";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocalStorage } from "react-use";
 
@@ -27,6 +26,7 @@ function calc(operation: Operation): number {
 
 const defaultConfig: Config = {
   tables: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+  operands: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
   random: false,
   loop: false,
   race: false,
@@ -58,7 +58,7 @@ function App() {
   const start = useCallback((): void => {
     const items = flatten<Operation>(
       config.tables.map((table) =>
-        range(11).map((operand) => ({
+        config.operands.map((operand) => ({
           operator: "x",
           operands: [operand, table],
         }))
@@ -70,7 +70,7 @@ function App() {
     setOperations(config.random ? shuffle(items) : items);
     setCurrentIndex(0);
     setStarted(true);
-  }, [config.random, config.tables]);
+  }, [config.operands, config.random, config.tables]);
 
   useEffect(() => {
     setConfig({ ...defaultConfig, ...config });

@@ -41,6 +41,56 @@ const tableIcons = [
   Filter9Icon,
 ];
 
+function CircleButton({
+  size = "small",
+  active,
+  disabled = false,
+  children,
+  onClick,
+}: {
+  size?: "small" | "big";
+  active: boolean;
+  disabled?: boolean;
+  children: string;
+  onClick: () => void;
+}) {
+  const theme = useTheme();
+
+  const multiplier = size === "big" ? 1.2 : 1;
+
+  return (
+    <Box
+      component="button"
+      sx={{
+        backgroundColor: alpha("#fff", 0.3),
+        border: "solid 2px",
+        color: alpha("#fff", 0.6),
+        width: 32 * multiplier,
+        height: 32 * multiplier,
+        borderRadius: 16 * multiplier,
+        cursor: disabled ? "default" : "pointer",
+        fontSize: `${0.8 * multiplier}rem`,
+        opacity: 0.5,
+
+        "&:hover": {
+          opacity: disabled ? 0.5 : 0.7,
+        },
+
+        ...(active
+          ? {
+              color: theme.palette.primary.main,
+              backgroundColor: alpha(theme.palette.primary.main, 0.3),
+              opacity: disabled ? 0.5 : 1,
+            }
+          : {}),
+      }}
+      onClick={onClick}
+    >
+      {children}
+    </Box>
+  );
+}
+
 function Settings({ config, onSubmited, onConfigChanged }: Props) {
   const theme = useTheme();
 
@@ -97,6 +147,29 @@ function Settings({ config, onSubmited, onConfigChanged }: Props) {
             </Box>
 
             <Box sx={{ mb: 4 }}>
+              <Box sx={{ fontWeight: 600, fontSize: 16, mb: 3 }}>Opérandes</Box>
+              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                {range(0, 11).map((i) => (
+                  <CircleButton
+                    key={i}
+                    size="big"
+                    active={config.operands.includes(i)}
+                    onClick={() => {
+                      onConfigChanged({
+                        ...config,
+                        operands: config.operands.includes(i)
+                          ? config.operands.filter((m) => m !== i)
+                          : config.operands.concat([i]),
+                      });
+                    }}
+                  >
+                    {`x${i}`}
+                  </CircleButton>
+                ))}
+              </Box>
+            </Box>
+
+            <Box sx={{ mb: 4 }}>
               <Box sx={{ fontWeight: 600, fontSize: 16, mb: 3 }}>Options</Box>
               <div>
                 <FormControlLabel
@@ -137,56 +210,31 @@ function Settings({ config, onSubmited, onConfigChanged }: Props) {
                       }}
                     />
                   }
-                  label={
-                    <>
-                      Contre la montre
-                      <Box
-                        component="span"
-                        sx={{ ml: 2, opacity: config.race ? 1 : 0.2 }}
-                      >
-                        {range(1, 6).map((i) => (
-                          <Box
-                            component="button"
-                            key={i}
-                            sx={{
-                              mx: 0.5,
-                              backgroundColor: alpha("#fff", 0.3),
-                              border: "solid 2px",
-                              color: alpha("#fff", 0.6),
-                              width: 32,
-                              height: 32,
-                              borderRadius: 16,
-                              cursor: config.raceTime ? "pointer" : "default",
-                              opacity: 0.5,
-
-                              "&:hover": {
-                                opacity: config.raceTime ? 0.7 : 0.5,
-                              },
-
-                              ...(config.raceTime === i
-                                ? {
-                                    color: theme.palette.primary.main,
-                                    backgroundColor: alpha(
-                                      theme.palette.primary.main,
-                                      0.3
-                                    ),
-                                    opacity: config.race ? 1 : 0.5,
-                                  }
-                                : {}),
-                            }}
-                            onClick={() => {
-                              if (config.race) {
-                                onConfigChanged({ ...config, raceTime: i });
-                              }
-                            }}
-                          >
-                            {i}s
-                          </Box>
-                        ))}
-                      </Box>
-                    </>
-                  }
+                  label="Contre la montre"
                 />
+                <Box
+                  sx={{
+                    display: "inline-flex",
+                    gap: 1,
+                    ml: 2,
+                    opacity: config.race ? 1 : 0.2,
+                  }}
+                >
+                  {range(1, 6).map((i) => (
+                    <CircleButton
+                      key={i}
+                      active={config.raceTime === i}
+                      disabled={!config.race}
+                      onClick={() => {
+                        if (config.race) {
+                          onConfigChanged({ ...config, raceTime: i });
+                        }
+                      }}
+                    >
+                      {`${i}s`}
+                    </CircleButton>
+                  ))}
+                </Box>
               </div>
               <div>
                 <FormControlLabel

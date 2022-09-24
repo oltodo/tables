@@ -1,5 +1,6 @@
 export interface Config {
   tables: number[];
+  operands: number[];
   random: boolean;
   loop: boolean;
   race: boolean;
