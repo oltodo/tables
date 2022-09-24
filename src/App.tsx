@@ -112,9 +112,7 @@ function App() {
 
     const next = async () => {
       if (!showResult) {
-        if (!config.race) {
-          setShowResult(true);
-        }
+        setShowResult(true);
         return;
       }
 
