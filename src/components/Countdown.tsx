@@ -1,5 +1,5 @@
-import { alpha, Box } from "@mui/material";
-import React, { useEffect, useRef } from "react";
+import { alpha, Box, useTheme } from "@mui/material";
+import { useEffect, useRef } from "react";
 
 interface Props {
   duration: number;
@@ -9,6 +9,7 @@ interface Props {
 
 function Countdown({ duration, running, onFinished }: Props) {
   const progressRef = useRef<HTMLDivElement>(null);
+  const theme = useTheme();
 
   useEffect(() => {
     const startTime = Date.now();
@@ -45,10 +46,7 @@ function Countdown({ duration, running, onFinished }: Props) {
       }}
     >
       <Box
-        sx={{
-          background: theme.palette.primary.main,
-          height: 4,
-        }}
+        sx={{ background: theme.palette.primary.main, height: 4 }}
         ref={progressRef}
       />
     </Box>

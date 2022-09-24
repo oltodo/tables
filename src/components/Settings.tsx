@@ -7,16 +7,17 @@ import Filter6Icon from "@mui/icons-material/Filter6TwoTone";
 import Filter7Icon from "@mui/icons-material/Filter7TwoTone";
 import Filter8Icon from "@mui/icons-material/Filter8TwoTone";
 import Filter9Icon from "@mui/icons-material/Filter9TwoTone";
-import { Checkbox, alpha } from "@mui/material";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Container from "@mui/material/Container";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Grid from "@mui/material/Grid";
-import makeStyles from "@mui/styles/makeStyles";
-import cn from "classnames";
+import {
+  Checkbox,
+  alpha,
+  useTheme,
+  Box,
+  Grid,
+  Button,
+  Container,
+  FormControlLabel,
+} from "@mui/material";
 import range from "lodash/range";
-import React from "react";
 
 import { Config } from "../types";
 import Filter0Icon from "./Filter0Rounded";
@@ -40,84 +41,28 @@ const tableIcons = [
   Filter9Icon,
 ];
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    background: theme.palette.background.default,
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  table: {
-    cursor: "pointer",
-    opacity: 0.5,
-
-    "&:hover": {
-      opacity: 0.7,
-    },
-  },
-  section: {
-    marginBottom: theme.spacing(4),
-  },
-  sectionTitle: {
-    fontWeight: 600,
-    fontSize: 16,
-    marginBottom: theme.spacing(3),
-  },
-  raceTimeButtons: {
-    marginLeft: theme.spacing(2),
-  },
-  disabled: {
-    opacity: 0.2,
-  },
-  raceTimeButton: {
-    margin: theme.spacing(0, 0.5),
-    backgroundColor: alpha("#fff", 0.3),
-    border: "solid 2px",
-    color: alpha("#fff", 0.6),
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    cursor: "pointer",
-    opacity: 0.5,
-
-    "&:hover": {
-      opacity: 0.7,
-    },
-
-    "$disabled &": {
-      cursor: "default",
-
-      "&:hover": {
-        opacity: 0.5,
-      },
-    },
-  },
-  active: {
-    color: theme.palette.primary.main,
-    backgroundColor: alpha(theme.palette.primary.main, 0.3),
-    opacity: 1,
-
-    "$disabled &": {
-      opacity: 0.5,
-    },
-  },
-}));
-
 function Settings({ config, onSubmited, onConfigChanged }: Props) {
-  const classes = useStyles();
+  const theme = useTheme();
 
   return (
-    <div className={classes.root}>
+    <Box
+      sx={{
+        background: theme.palette.background.default,
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       <Container maxWidth="sm">
         <Grid container spacing={10}>
           <Grid item md={12}>
-            <div className={classes.section}>
-              <div className={classes.sectionTitle}>Tables</div>
+            <Box sx={{ mb: 4 }}>
+              <Box sx={{ fontWeight: 600, fontSize: 16, mb: 3 }}>Tables</Box>
               <Grid container spacing={2}>
                 {range(10).map((i) => {
                   const Icon = tableIcons[i];
@@ -126,10 +71,16 @@ function Settings({ config, onSubmited, onConfigChanged }: Props) {
                   return (
                     <Grid key={i} item xs={6} sm={4} md={2}>
                       <Icon
+                        sx={{
+                          cursor: "pointer",
+                          opacity: checked ? 1 : 0.5,
+
+                          "&:hover": {
+                            opacity: 0.7,
+                          },
+                        }}
                         fontSize="large"
                         color={checked ? "primary" : "inherit"}
-                        className={classes.table}
-                        style={checked ? { opacity: 1 } : {}}
                         onClick={() => {
                           onConfigChanged({
                             ...config,
@@ -143,14 +94,15 @@ function Settings({ config, onSubmited, onConfigChanged }: Props) {
                   );
                 })}
               </Grid>
-            </div>
+            </Box>
 
-            <div className={classes.section}>
-              <div className={classes.sectionTitle}>Options</div>
+            <Box sx={{ mb: 4 }}>
+              <Box sx={{ fontWeight: 600, fontSize: 16, mb: 3 }}>Options</Box>
               <div>
                 <FormControlLabel
                   control={
                     <Checkbox
+                      color="secondary"
                       checked={config.random}
                       onChange={({ target: { checked } }) => {
                         onConfigChanged({ ...config, random: checked });
@@ -164,6 +116,7 @@ function Settings({ config, onSubmited, onConfigChanged }: Props) {
                 <FormControlLabel
                   control={
                     <Checkbox
+                      color="secondary"
                       checked={config.loop}
                       onChange={({ target: { checked } }) => {
                         onConfigChanged({ ...config, loop: checked });
@@ -177,6 +130,7 @@ function Settings({ config, onSubmited, onConfigChanged }: Props) {
                 <FormControlLabel
                   control={
                     <Checkbox
+                      color="secondary"
                       checked={config.race}
                       onChange={({ target: { checked } }) => {
                         onConfigChanged({ ...config, race: checked });
@@ -186,17 +140,40 @@ function Settings({ config, onSubmited, onConfigChanged }: Props) {
                   label={
                     <>
                       Contre la montre
-                      <span
-                        className={cn(classes.raceTimeButtons, {
-                          [classes.disabled]: !config.race,
-                        })}
+                      <Box
+                        component="span"
+                        sx={{ ml: 2, opacity: config.race ? 1 : 0.2 }}
                       >
                         {range(1, 6).map((i) => (
-                          <button
+                          <Box
+                            component="button"
                             key={i}
-                            className={cn(classes.raceTimeButton, {
-                              [classes.active]: config.raceTime === i,
-                            })}
+                            sx={{
+                              mx: 0.5,
+                              backgroundColor: alpha("#fff", 0.3),
+                              border: "solid 2px",
+                              color: alpha("#fff", 0.6),
+                              width: 32,
+                              height: 32,
+                              borderRadius: 16,
+                              cursor: config.raceTime ? "pointer" : "default",
+                              opacity: 0.5,
+
+                              "&:hover": {
+                                opacity: config.raceTime ? 0.7 : 0.5,
+                              },
+
+                              ...(config.raceTime === i
+                                ? {
+                                    color: theme.palette.primary.main,
+                                    backgroundColor: alpha(
+                                      theme.palette.primary.main,
+                                      0.3
+                                    ),
+                                    opacity: config.race ? 1 : 0.5,
+                                  }
+                                : {}),
+                            }}
                             onClick={() => {
                               if (config.race) {
                                 onConfigChanged({ ...config, raceTime: i });
@@ -204,9 +181,9 @@ function Settings({ config, onSubmited, onConfigChanged }: Props) {
                             }}
                           >
                             {i}s
-                          </button>
+                          </Box>
                         ))}
-                      </span>
+                      </Box>
                     </>
                   }
                 />
@@ -215,6 +192,7 @@ function Settings({ config, onSubmited, onConfigChanged }: Props) {
                 <FormControlLabel
                   control={
                     <Checkbox
+                      color="secondary"
                       checked={config.sayOperation}
                       onChange={({ target: { checked } }) => {
                         onConfigChanged({ ...config, sayOperation: checked });
@@ -228,6 +206,7 @@ function Settings({ config, onSubmited, onConfigChanged }: Props) {
                 <FormControlLabel
                   control={
                     <Checkbox
+                      color="secondary"
                       checked={config.sayResult}
                       onChange={({ target: { checked } }) => {
                         onConfigChanged({ ...config, sayResult: checked });
@@ -237,10 +216,10 @@ function Settings({ config, onSubmited, onConfigChanged }: Props) {
                   label="Prononcer le résultat"
                 />
               </div>
-            </div>
+            </Box>
           </Grid>
         </Grid>
-        <Box marginTop={10} display="flex" justifyContent="center">
+        <Box sx={{ mt: 10, display: "flex", justifyContent: "center" }}>
           <Button
             color="primary"
             size="large"
@@ -251,7 +230,7 @@ function Settings({ config, onSubmited, onConfigChanged }: Props) {
           </Button>
         </Box>
       </Container>
-    </div>
+    </Box>
   );
 }
 

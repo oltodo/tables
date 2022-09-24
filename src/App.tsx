@@ -1,7 +1,7 @@
-import makeStyles from "@mui/styles/makeStyles";
+import { Box } from "@mui/material";
 import { flatten, shuffle } from "lodash";
 import range from "lodash/range";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocalStorage } from "react-use";
 
 import Countdown from "./components/Countdown";
@@ -25,22 +25,6 @@ function calc(operation: Operation): number {
   }
 }
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    position: "fixed",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "column",
-    width: "100vw",
-    height: "100vh",
-  },
-  operation: {
-    fontSize: "10vw",
-    marginBottom: theme.spacing(8),
-  },
-}));
-
 const defaultConfig: Config = {
   tables: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
   random: false,
@@ -62,7 +46,6 @@ function App() {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [showResult, setShowResult] = useState<boolean>(false);
   const [operations, setOperations] = useState<Operation[]>([]);
-  const classes = useStyles();
 
   const handleCountdownFinished = useMemo(() => {
     return () => {
@@ -178,10 +161,10 @@ function App() {
 
     return (
       <>
-        <div className={classes.operation}>
+        <Box sx={{ fontSize: "10vw", mb: 8 }}>
           {op.operands.join(` ${op.operator} `)}
           {showResult ? ` = ${result}` : ""}
-        </div>
+        </Box>
         {config.race && (
           <div
             style={{
@@ -201,7 +184,17 @@ function App() {
   };
 
   return (
-    <div className={classes.root}>
+    <Box
+      sx={{
+        position: "fixed",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexDirection: "column",
+        width: "100vw",
+        height: "100vh",
+      }}
+    >
       {started ? (
         renderOperation()
       ) : (
@@ -227,7 +220,7 @@ function App() {
           setStarted(false);
         }}
       />
-    </div>
+    </Box>
   );
 }
 
