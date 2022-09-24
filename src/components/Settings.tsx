@@ -110,9 +110,9 @@ function Settings({ config, onSubmited, onConfigChanged }: Props) {
         justifyContent: "center",
       }}
     >
-      <Container maxWidth="sm">
-        <Grid container spacing={10}>
-          <Grid item md={12}>
+      <Container maxWidth="md">
+        <Box sx={{ display: "flex", gap: 4 }}>
+          <Box sx={{ flex: "0.5 1 0" }}>
             <Box sx={{ mb: 4 }}>
               <Box sx={{ fontWeight: 600, fontSize: 16, mb: 3 }}>
                 Type d'opération
@@ -142,7 +142,7 @@ function Settings({ config, onSubmited, onConfigChanged }: Props) {
             <Box sx={{ mb: 4 }}>
               <Box sx={{ fontWeight: 600, fontSize: 16, mb: 3 }}>Tables</Box>
 
-              <Grid container spacing={2}>
+              <Grid container spacing={2} columns={10}>
                 {range(10).map((i) => {
                   const Icon = tableIcons[i];
                   const checked = config.tables.includes(i);
@@ -174,30 +174,39 @@ function Settings({ config, onSubmited, onConfigChanged }: Props) {
                 })}
               </Grid>
             </Box>
-
-            <Box sx={{ mb: 4 }}>
+            <Box>
               <Box sx={{ fontWeight: 600, fontSize: 16, mb: 3 }}>Opérandes</Box>
-              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+              <Grid container spacing={2}>
                 {range(0, 11).map((i) => (
-                  <CircleButton
-                    key={i}
-                    size="big"
-                    active={config.operands.includes(i)}
-                    onClick={() => {
-                      onConfigChanged({
-                        ...config,
-                        operands: config.operands.includes(i)
-                          ? config.operands.filter((m) => m !== i)
-                          : config.operands.concat([i]),
-                      });
-                    }}
-                  >
-                    {`${config.operator}${i}`}
-                  </CircleButton>
+                  <Grid key={i} item xs={6} sm={4} md={2}>
+                    <CircleButton
+                      key={i}
+                      size="big"
+                      active={config.operands.includes(i)}
+                      onClick={() => {
+                        onConfigChanged({
+                          ...config,
+                          operands: config.operands.includes(i)
+                            ? config.operands.filter((m) => m !== i)
+                            : config.operands.concat([i]),
+                        });
+                      }}
+                    >
+                      {`${config.operator}${i}`}
+                    </CircleButton>
+                  </Grid>
                 ))}
-              </Box>
+              </Grid>
             </Box>
-
+          </Box>
+          <Box
+            sx={{
+              width: "1px",
+              justifySelf: "stretch",
+              bgcolor: alpha("#fff", 0.1),
+            }}
+          />
+          <Box sx={{ flex: "0.5 1 0" }}>
             <Box sx={{ mb: 4 }}>
               <Box sx={{ fontWeight: 600, fontSize: 16, mb: 3 }}>Options</Box>
               <div>
@@ -294,16 +303,26 @@ function Settings({ config, onSubmited, onConfigChanged }: Props) {
                 />
               </div>
             </Box>
-          </Grid>
-        </Grid>
-        <Box sx={{ mt: 10, display: "flex", justifyContent: "center" }}>
+          </Box>
+        </Box>
+        <Box
+          sx={{
+            position: "fixed",
+            width: "100%",
+            bottom: 80,
+            left: 0,
+            mt: 6,
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
           <Button
             color="primary"
             size="large"
             variant="contained"
             onClick={onSubmited}
           >
-            Commencer
+            C'est parti !
           </Button>
         </Box>
       </Container>
