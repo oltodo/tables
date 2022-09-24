@@ -1,4 +1,5 @@
 export interface Config {
+  operator: "+" | "x";
   tables: number[];
   operands: number[];
   random: boolean;

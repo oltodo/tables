@@ -25,6 +25,7 @@ function calc(operation: Operation): number {
 }
 
 const defaultConfig: Config = {
+  operator: "x",
   tables: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
   operands: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
   random: false,
@@ -59,7 +60,7 @@ function App() {
     const items = flatten<Operation>(
       config.tables.map((table) =>
         config.operands.map((operand) => ({
-          operator: "x",
+          operator: config.operator,
           operands: [operand, table],
         }))
       )
@@ -70,7 +71,7 @@ function App() {
     setOperations(config.random ? shuffle(items) : items);
     setCurrentIndex(0);
     setStarted(true);
-  }, [config.operands, config.random, config.tables]);
+  }, [config.operands, config.operator, config.random, config.tables]);
 
   useEffect(() => {
     setConfig({ ...defaultConfig, ...config });

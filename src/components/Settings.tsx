@@ -16,6 +16,8 @@ import {
   Button,
   Container,
   FormControlLabel,
+  RadioGroup,
+  Radio,
 } from "@mui/material";
 import range from "lodash/range";
 
@@ -112,7 +114,34 @@ function Settings({ config, onSubmited, onConfigChanged }: Props) {
         <Grid container spacing={10}>
           <Grid item md={12}>
             <Box sx={{ mb: 4 }}>
+              <Box sx={{ fontWeight: 600, fontSize: 16, mb: 3 }}>
+                Type d'opération
+              </Box>
+              <RadioGroup
+                value={config.operator}
+                onChange={(event) => {
+                  onConfigChanged({
+                    ...config,
+                    operator: event.target.value === "+" ? "+" : "x",
+                  });
+                }}
+                row
+              >
+                <FormControlLabel
+                  value="+"
+                  control={<Radio />}
+                  label="Addition"
+                />
+                <FormControlLabel
+                  value="x"
+                  control={<Radio />}
+                  label="Multiplication"
+                />
+              </RadioGroup>
+            </Box>
+            <Box sx={{ mb: 4 }}>
               <Box sx={{ fontWeight: 600, fontSize: 16, mb: 3 }}>Tables</Box>
+
               <Grid container spacing={2}>
                 {range(10).map((i) => {
                   const Icon = tableIcons[i];
@@ -163,7 +192,7 @@ function Settings({ config, onSubmited, onConfigChanged }: Props) {
                       });
                     }}
                   >
-                    {`x${i}`}
+                    {`${config.operator}${i}`}
                   </CircleButton>
                 ))}
               </Box>
