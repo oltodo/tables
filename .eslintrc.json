@@ -1,5 +1,5 @@
 {
-  "extends": ["react-app", "react-app/jest"],
+  "extends": ["react-app", "react-app/jest", "plugin:react/jsx-runtime"],
   "rules": {
     "prefer-template": "error",
     "prefer-arrow-callback": [

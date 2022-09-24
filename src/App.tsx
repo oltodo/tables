@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import { flatten, shuffle } from "lodash";
 import range from "lodash/range";
 import React, { useCallback, useEffect, useMemo, useState } from "react";

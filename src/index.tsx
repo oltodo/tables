@@ -1,5 +1,11 @@
-import CssBaseline from "@material-ui/core/CssBaseline";
-import { createTheme, ThemeProvider } from "@material-ui/core/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import {
+  createTheme,
+  ThemeProvider,
+  Theme,
+  StyledEngineProvider,
+  adaptV4Theme,
+} from "@mui/material/styles";
 import React from "react";
 import { createRoot } from "react-dom/client";
 
@@ -7,31 +13,40 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import "./index.css";
 
-const theme = createTheme({
-  typography: {
-    fontFamily: '"Source Sans Pro", "Helvetica", "Arial", sans-serif',
-    fontWeightMedium: 600,
-  },
-  palette: {
-    background: {
-      default: "#0f2c62",
+declare module "@mui/styles/defaultTheme" {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
+
+const theme = createTheme(
+  adaptV4Theme({
+    typography: {
+      fontFamily: '"Source Sans Pro", "Helvetica", "Arial", sans-serif',
+      fontWeightMedium: 600,
     },
-    primary: {
-      main: "#44d7b6",
+    palette: {
+      background: {
+        default: "#0f2c62",
+      },
+      primary: {
+        main: "#44d7b6",
+      },
+      type: "dark",
     },
-    type: "dark",
-  },
-});
+  })
+);
 
 const container = document.getElementById("root");
 const root = createRoot(container!);
 
 root.render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <App />
-    </ThemeProvider>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <App />
+      </ThemeProvider>
+    </StyledEngineProvider>
   </React.StrictMode>
 );
 

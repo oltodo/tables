@@ -1,4 +1,4 @@
-import { alpha, makeStyles } from "@material-ui/core";
+import { alpha, Box } from "@mui/material";
 import React, { useEffect, useRef } from "react";
 
 interface Props {
@@ -7,21 +7,7 @@ interface Props {
   onFinished: () => void;
 }
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    width: 200,
-    height: 4,
-    borderRadius: 2,
-    background: alpha("#fff", 0.5),
-  },
-  inner: {
-    background: theme.palette.primary.main,
-    height: 4,
-  },
-}));
-
 function Countdown({ duration, running, onFinished }: Props) {
-  const classes = useStyles();
   const progressRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -50,9 +36,22 @@ function Countdown({ duration, running, onFinished }: Props) {
   }, [duration, running, onFinished]);
 
   return (
-    <div className={classes.root}>
-      <div className={classes.inner} ref={progressRef} />
-    </div>
+    <Box
+      sx={{
+        width: 200,
+        height: 4,
+        borderRadius: 2,
+        background: alpha("#fff", 0.5),
+      }}
+    >
+      <Box
+        sx={{
+          background: theme.palette.primary.main,
+          height: 4,
+        }}
+        ref={progressRef}
+      />
+    </Box>
   );
 }
 
