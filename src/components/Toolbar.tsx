@@ -47,11 +47,13 @@ function Option({
   disabled: boolean;
   children: ReactNode;
 }) {
+  const theme = useTheme();
+
   return (
     <Box
       sx={{
         mx: 0.5,
-        color: disabled ? "#fff" : "#28f5b7",
+        color: disabled ? "#fff" : theme.palette.primary.main,
         opacity: disabled ? 0.2 : 1,
 
         "& svg": {

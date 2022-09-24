@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, createTheme, Theme, ThemeProvider } from "@mui/material";
 import { flatten, shuffle } from "lodash";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocalStorage } from "react-use";
@@ -183,43 +183,57 @@ function App() {
   };
 
   return (
-    <Box
-      sx={{
-        position: "fixed",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        flexDirection: "column",
-        width: "100vw",
-        height: "100vh",
-      }}
+    <ThemeProvider
+      theme={(theme: Theme) =>
+        createTheme({
+          ...theme,
+          palette: {
+            ...theme.palette,
+            primary: {
+              main: config.operator === "+" ? "#d7ba44" : "#44d7b6",
+            },
+          },
+        })
+      }
     >
-      {started ? (
-        renderOperation()
-      ) : (
-        <Settings
-          config={config}
-          onConfigChanged={(newConfig) => {
-            setConfig({ ...config, ...newConfig });
-          }}
-          onSubmited={start}
-        />
-      )}
-
-      <Toolbar
-        config={config}
-        hidden={!started}
-        progress={(currentIndex / operations.length) * 100}
-        message={
-          !showResult && !config.race
-            ? "Appuies sur espace pour afficher le résultat"
-            : (showResult && "Appuies sur espace pour continuer") || ""
-        }
-        onStop={() => {
-          setStarted(false);
+      <Box
+        sx={{
+          position: "fixed",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexDirection: "column",
+          width: "100vw",
+          height: "100vh",
         }}
-      />
-    </Box>
+      >
+        {started ? (
+          renderOperation()
+        ) : (
+          <Settings
+            config={config}
+            onConfigChanged={(newConfig) => {
+              setConfig({ ...config, ...newConfig });
+            }}
+            onSubmited={start}
+          />
+        )}
+
+        <Toolbar
+          config={config}
+          hidden={!started}
+          progress={(currentIndex / operations.length) * 100}
+          message={
+            !showResult && !config.race
+              ? "Appuies sur espace pour afficher le résultat"
+              : (showResult && "Appuies sur espace pour continuer") || ""
+          }
+          onStop={() => {
+            setStarted(false);
+          }}
+        />
+      </Box>
+    </ThemeProvider>
   );
 }
 
